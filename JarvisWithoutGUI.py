@@ -46,20 +46,29 @@ class Jarvis():
     def take_Command(self):
         try:
             listener = sr.Recognizer()
-            with sr.Microphone() as source:
+            # mic_list = sr.Microphone.list_microphone_names()
+            # print("Available Mics:", mic_list)
 
+            # Change device_index accordingly
+            with sr.Microphone(device_index=1) as source:
                 print('Listening....')
+                listener.adjust_for_ambient_noise(source, duration=1)  # Optional - removes background noise
                 listener.pause_threshold = 1
-                voice = listener.listen(source,timeout=4,phrase_time_limit=7)
+                voice = listener.listen(source, timeout=4, phrase_time_limit=7)
                 print("Recognizing...")
-                command1 = listener.recognize_google(voice,language='en-in')
-                command1 = command1.lower()  
-                if 'jarvis' in command1: 
-                    command1 = command1.replace('jarvis','')
-                
-            return command1
-        except:
+                command1 = listener.recognize_google(voice, language='en-in')
+                command1 = command1.lower()
+
+                if 'jarvis' in command1:
+                    command1 = command1.replace('jarvis', '')
+
+                print(f"You said: {command1}")
+                return command1
+
+        except Exception as e:
+            print("Error:", e)
             return 'None'
+
         
     #Jarvis commands controller 
     def run_jarvis(self):
@@ -1038,7 +1047,7 @@ class Jarvis():
 
     #News
     def news(self):
-        MAIN_URL_= "https://newsapi.org/v2/top-headlines?sources=techcrunch&apiKey=YOUR_NEWS_API_KEY"
+        MAIN_URL_= "https://newsapi.org/v2/top-headlines?sources=techcrunch&apiKey=54c5a45c018b4f1b84ebc0dc310a8a42"
         MAIN_PAGE_ = get(MAIN_URL_).json()
         articles = MAIN_PAGE_["articles"]
         headings=[]
