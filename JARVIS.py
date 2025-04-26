@@ -64,24 +64,58 @@ class MainThread(QThread):
     def run(self):
         self.Intro()
     
-    #function that will take the commands  to convert voice into text
+    # #function that will take the commands  to convert voice into text
+    # def take_Command(self):
+    #     try:
+    #         listener = sr.Recognizer()
+    #         with sr.Microphone() as source:
+
+    #             print('Listening....')
+    #             listener.pause_threshold = 1
+    #             voice = listener.listen(source,timeout=4,phrase_time_limit=7)
+    #             print("Recognizing...")
+    #             command1 = listener.recognize_google(voice,language='en-in')
+    #             command1 = command1.lower()  
+    #             if 'jarvis' in command1: 
+    #                 command1 = command1.replace('jarvis','')
+                
+    #         return command1
+    #     except:
+    #         return 'None'
+    
+    
     def take_Command(self):
         try:
             listener = sr.Recognizer()
-            with sr.Microphone() as source:
+            # Print available microphones to find the right index
+            mic_list = sr.Microphone.list_microphone_names()
+            print("Available Mics:", mic_list)
 
+            # Try device_index=0 instead of 1, or find the correct index from the list
+            with sr.Microphone(device_index=0) as source:  # Try changing to 0
                 print('Listening....')
+                listener.adjust_for_ambient_noise(source, duration=1)
                 listener.pause_threshold = 1
-                voice = listener.listen(source,timeout=4,phrase_time_limit=7)
-                print("Recognizing...")
-                command1 = listener.recognize_google(voice,language='en-in')
-                command1 = command1.lower()  
-                if 'jarvis' in command1: 
-                    command1 = command1.replace('jarvis','')
+                voice = listener.listen(source, timeout=5, phrase_time_limit=7)
                 
-            return command1
-        except:
+                print("Recognizing...")
+                command1 = listener.recognize_google(voice, language='en-in')
+                command1 = command1.lower()
+
+                if 'jarvis' in command1:
+                    command1 = command1.replace('jarvis', '')
+
+                print(f"You said: {command1}")
+                return command1
+
+        except Exception as e:
+            print(f"Error: {e}")
             return 'None'
+        
+    
+        
+        
+        
         
     #Jarvis commands controller 
     def run_jarvis(self):
@@ -329,17 +363,22 @@ class MainThread(QThread):
                 self.talk("Boss the system is going to sleep")
                 os.system("rundll32.exe powrprof.dll, SetSuspendState 0,1,0")
             
-    #Intro msg
-    def Intro(self):
-        while True:
-            self.permission = self.take_Command()
-            print(self.permission)
-            if ("wake up" in self.permission) or ("get up" in self.permission):
-                self.run_jarvis()
-            elif ("goodbye" in self.permission) or ("get lost" in self.permission):
-                self.talk("Thanks for using me boss, have a good day")
-                sys.exit()
+    # #Intro msg
+    # def Intro(self):
+    #     while True:
+    #         self.permission = self.take_Command()
+    #         print(self.permission)
+    #         if ("wake up" in self.permission) or ("get up" in self.permission):
+    #             self.run_jarvis()
+    #         elif ("goodbye" in self.permission) or ("get lost" in self.permission):
+    #             self.talk("Thanks for using me boss, have a good day")
+    #             sys.exit()
                 
+    def Intro(self):
+        self.run_jarvis()  # Start Jarvis immediately instead of waiting for activation
+        
+        
+        
     #Talk 
     def talk(self,text):
         engine.say(text)

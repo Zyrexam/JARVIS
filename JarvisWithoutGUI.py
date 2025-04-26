@@ -55,6 +55,7 @@ class Jarvis():
                 listener.adjust_for_ambient_noise(source, duration=1)  # Optional - removes background noise
                 listener.pause_threshold = 1
                 voice = listener.listen(source, timeout=4, phrase_time_limit=7)
+            
                 print("Recognizing...")
                 command1 = listener.recognize_google(voice, language='en-in')
                 command1 = command1.lower()
